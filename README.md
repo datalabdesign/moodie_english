@@ -68,7 +68,7 @@ Dependencies (`tensorflow`, `scikit-learn`, `distinctipy`, `umap-learn`, etc.) a
 
 ## About the Author
 
-[Elias Bitencourt](https://eliasbitencourt.com) is an Assistant Professor in the Design Program at the State University of Bahia (UNEB). He holds a PhD in Communication from FACOM/UFBA and an MA in Culture and Society from IHAC/UFBA. He was a visiting researcher at the Milieux Institute (Concordia University, Canada) in 2019. He currently leads **Datalab/Design (CNPq)** at UNEB, a research center focused on data visualization and digital methods. His work investigates data visualization, platform studies, digital imaginaries, and algorithmic mediation in social relations. He is a collaborating researcher at the **Inova Media Lab** (Universidade Nova de Lisboa) and at the international **Public Data Lab** network.
+[Elias Bitencourt](https://eliasbitencourt.com) is an Associate Professor in the Design Program at the State University of Bahia (UNEB). He holds a PhD in Communication from FACOM/UFBA and an MA in Culture and Society from IHAC/UFBA. He was a visiting researcher at the Milieux Institute (Concordia University, Canada) in 2019. He currently leads **Datalab/Design (CNPq)** at UNEB, a research center focused on data visualization and digital methods. His work investigates data visualization, platform studies, digital imaginaries, and algorithmic mediation in social relations. He is a collaborating researcher at the **Inova Media Lab** (Universidade Nova de Lisboa) and at the international **Public Data Lab** network.
 
 ---
 
