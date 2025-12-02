@@ -1,52 +1,52 @@
 <img src="MOODIE_GRABBER.png" alt="Logo MOODIE" width="400"/>
 
-# MOODIE Grabber (Módulo de Coleta de Imagens)
+# MOODIE Grabber (Image Collection Module)
 
-**MOODIE Grabber** é o módulo de coleta de imagens da ferramenta [MOODIE](https://github.com/datalabdesign/moodie), desenvolvido para permitir o download e pré-processamento de imagens a partir de um arquivo CSV com links. Ele está em fase **beta**, sendo o primeiro módulo funcional da ferramenta MOODIE.
+**MOODIE Grabber** is the image collection module of the [MOODIE](https://github.com/datalabdesign/moodie) tool, developed to enable the download and preprocessing of images from a CSV file containing links. It is currently in **beta**, serving as the first functional module of the MOODIE tool.
 
-Este módulo foi pensado como uma introdução prática ao uso de imagens em pipelines de pesquisa em design, oferecendo desde a coleta até os primeiros metadados estruturados que alimentam etapas posteriores de análise visual e exploração criativa.
+This module was designed as a practical introduction to using images in research pipelines for design, providing everything from collection to the first structured metadata that feeds later stages of visual analysis and creative exploration.
 
-[![Abrir no Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/datalabdesign/moodie/blob/main/modulo_grabber/moodie_grabber_clean.ipynb)
-
-
-
-## ✦ Atualizações (08 / 05 / 2025)
-
-* **Compatibilidade total com JSON**  
-  O módulo identifica automaticamente a estrutura de listas em JSON, “achata” chaves aninhadas e converte em CSV antes da análise — perfeito para APIs que retornam grandes coleções de itens.
-
-* **Download paralelo de imagens (+ retry/back-off)**  
-  Agora as imagens são baixadas com até 10 threads simultâneas, com cabeçalhos *User-Agent* aleatórios e política de re-tentativa (códigos 429/5xx), acelerando o processo e reduzindo bloqueios por servidor.
+[![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/datalabdesign/moodie/blob/main/modulo_grabber/moodie_grabber_clean.ipynb)
 
 ---
 
-## ✦ Funcionalidades
+## ✦ Updates (08 / 05 / 2025)
 
-O MOODIE Grabber permite:
+* **Full JSON compatibility**  
+  The module automatically detects JSON list structures, flattens nested keys, and converts the content into CSV before analysis — ideal for APIs that return large collections of items.
 
-- **Leitura de CSV ou JSON** contendo links de imagens (campo configurável);
-- **Sampleamento estatístico** do dataset completo:
-  - Amostragem proporcional, aleatória, por classe ou por tamanho (upsample/downsample);
-- **Remoção de duplicatas** com base na seleção de colunas específicas;
-- **Download automático de imagens em paralelo**, com:
-  - Política de retry/back-off integrada;
-  - Estratégias de nomeação: nome original, hash hexadecimal ou hash perceptual;
-- **Extração automática de metadados**:
-  - Tamanho do arquivo, dimensões, tipo e formato da imagem;
-  - Informações EXIF (quando disponíveis);
-  - Domínio de origem do link (útil para análise de proveniência);
-- Geração de um **dataset estruturado** com os dados das imagens baixadas;
-- Integração com os demais módulos da ferramenta MOODIE (Metadata e Trends).
+* **Parallel image download (+ retry/back-off)**  
+  Images are now downloaded with up to 10 simultaneous threads, using random *User-Agent* headers and a retry policy (429/5xx codes), speeding up the process and reducing server-side blocking.
 
 ---
 
-## ✦ Requisitos
+## ✦ Features
 
-Este módulo é compatível com o Google Colab, sem necessidade de instalação local. As bibliotecas utilizadas são automaticamente disponíveis no ambiente Colab:
+MOODIE Grabber allows:
+
+- **Reading CSV or JSON** files containing image links (configurable field);
+- **Statistical sampling** of the full dataset:
+  - Proportional sampling, random sampling, class-based sampling, or size-based sampling (upsample/downsample);
+- **Duplicate removal** based on selected columns;
+- **Automatic parallel image download**, with:
+  - Built-in retry/back-off policy;
+  - Naming strategies: original name, hexadecimal hash, or perceptual hash;
+- **Automatic metadata extraction**:
+  - File size, dimensions, type, and image format;
+  - EXIF information (when available);
+  - Link source domain (useful for provenance analysis);
+- Generation of a **structured dataset** with metadata from downloaded images;
+- Integration with the other modules of the MOODIE tool (Metadata and Trends).
+
+---
+
+## ✦ Requirements
+
+This module is compatible with Google Colab and does not require local installation. All libraries used are available by default in the Colab environment:
 
 - `pandas`
 - `numpy`
-- `PIL` (do pacote `Pillow`)
+- `PIL` (from the `Pillow` package)
 - `imagehash`
 - `tqdm`
 - `requests`
@@ -56,101 +56,110 @@ Este módulo é compatível com o Google Colab, sem necessidade de instalação 
 
 ---
 
-## ✦ Como usar
+## ✦ How to Use
 
-A execução do MOODIE Grabber no Google Colab é feita **passo a passo, executando as células do notebook na ordem** e interagindo com a interface. Abaixo, um resumo prático de cada etapa:
+Running MOODIE Grabber in Google Colab is done **step by step by executing the notebook cells in order** and interacting with the interface. Below is a practical summary of each stage:
 
-### 0.0 Antes de começar, vamos precisar de um CSV
-Prepare um arquivo `.csv` com pelo menos uma coluna contendo os links de imagens, como no exemplo abaixo
+### 0.0 Before starting, you will need a CSV
+Prepare a `.csv` file with at least one column containing image links, as in the example below:
 
-| col a  | link_imagem                 |
-|----------|-----------------------------|
-| ........ | https://exemplo.com/img1.jpg |
-| ........ | https://exemplo.com/img2.jpg |
+| col a  | link_imagem                  |
+|--------|------------------------------|
+| ...    | https://example.com/img1.jpg |
+| ...    | https://example.com/img2.jpg |
 
+### 01. Installing dependencies
+Click the **“Install Dependencies”** button and wait for the required packages to be installed.
 
+### 02. Connecting to Google Drive (optional but recommended)
+MOODIE works best when connected to your Google Drive. This helps avoid slowdowns with large files and ensures your data remains saved across sessions.
 
-### 01. Instalando as dependências
-Clique no botão **“Instalar Dependências”** e aguarde a instalação dos pacotes necessários.
+If you prefer, you can also work only with local uploads without using Drive.
 
-### 02. Conectando ao Google Drive (opcional, mas recomendado)
-O MOODIE funciona melhor se você estiver conectado ao seu Google Drive. Isso ajuda a evitar lentidão com arquivos grandes e mantém seus dados salvos entre sessões.
+### 03. Creating working directories
+You will be able to configure:
 
-Se preferir, também é possível continuar trabalhando apenas com uploads locais, sem o Drive.
+- Whether to save data to your Google Drive or only to Colab’s temporary environment;
+- Whether you already have an existing folder or want to create a new project directory;
+- The project name, which will be used for naming files, e.g., `dataset_project_name.csv`;
+- Notes about the project, stored for future reference.
 
-### 03. Criando diretórios de trabalho
-Você poderá configurar:
-- Se deseja salvar os dados no seu Google Drive ou apenas no ambiente temporário do Colab;
-- Se já tem uma pasta existente ou deseja criar um novo diretório para o projeto;
-- O nome do projeto, que será usado para nomear arquivos; ex: `dataset_nome_do_projeto.csv`
-- Notas sobre o projeto, que serão registradas para referência futura.
+Set the execution parameters at the beginning of the notebook:
 
-Defina os parâmetros de execução no início do notebook:
-- Caminho do arquivo CSV;
-- Nome da coluna com os links;
-- Caminho da pasta onde salvar as imagens.
+- Path to the CSV file;
+- Name of the column containing the links;
+- Folder path where images will be saved.
 
-A estrutura de pastas criada é pensada para integração com os outros módulos da ferramenta MOODIE, embora este módulo utilize apenas algumas delas:
+The folder structure is designed for integration with the other MOODIE modules, though this module only uses some of them:
 
 ```
-/seu diretório
-├── datasets  ---> Local onde os datasets em csv serão salvos
-├── reports  ---> Local onde os relatórios e documentações dos processamentos serão salvos
-├── imagens  ---> Local onde as imagens baixadas ficam armazenadas
-├── imagewall  ---> Local onde as visualizações de dados das imagewals ficam armazenadas (módulo trends)
-├── paleta  ---> Local onde as paletas de cores extraídas do dataset serão salvas (módulo metadata e trends
+/your directory
+├── datasets ---> Where CSV datasets will be saved
+├── reports ---> Where processing reports and documentation will be saved
+├── imagens ---> Where downloaded images will be stored
+├── imagewall ---> Where imagewall visualizations will be stored (trends module)
+├── paleta ---> Where extracted color palettes will be saved (metadata and trends modules)
 ```
 
 
-### 04. Upload e análise do CSV (obrigatório)
-Você fará upload de um CSV contendo os links das imagens. O MOODIE irá:
-- Ler o arquivo e armazenar os dados em um DataFrame global;
-- Exibir colunas e tipos de dados;
-- Identificar valores ausentes;
-- Analisar colunas com valores únicos;
-- Sugerir possíveis chaves para identificação de duplicatas.
 
-### 05. Remoção de duplicatas (opcional)
-Com base na análise anterior, você pode optar por remover duplicatas usando colunas específicas. Tenha atenção:
-- Só remova se tiver certeza que são duplicatas;
-- Bases com memes ou imagens virais podem repetir conteúdo com propósito;
-- Guarde sempre uma cópia do CSV original.
+### 04. Uploading and analyzing the CSV (mandatory)
+You will upload a CSV containing your image links. MOODIE will:
 
-### 06. Sampleamento do dataset (opcional)
-Você pode aplicar amostragem para:
-- Reduzir o tamanho do dataset;
-- Balancear categorias;
-- Testar com subconjuntos antes de processar tudo.
+- Load the file and store the data in a global DataFrame;
+- Display columns and data types;
+- Identify missing values;
+- Analyze columns with unique values;
+- Suggest possible keys for duplicate detection.
 
-### 07. Estratégias de nomeação de imagens
-Antes de baixar, escolha como deseja nomear os arquivos:
-- **Nome Original**: mantém o nome da imagem conforme o link (pode gerar conflitos se houver nomes repetidos);
-- **HEX**: gera nomes únicos com identificadores hexadecimais;
-- **pHash**: usa o hash perceptual da imagem, útil para identificar visualmente imagens parecidas.
+### 05. Removing duplicates (optional)
+Based on the previous analysis, you may choose to remove duplicates using specific columns. Keep in mind:
 
-### Após configurar, **basta seguir executando as células uma a uma**, sempre lendo as instruções e respondendo os widgets exibidos. O MOODIE cuidará do restante automaticamente.  Ao final da execução, será gerado um dataset `.csv` com os dados das imagens baixadas e você poderá acessar tudo em cada um dos subdiretórios criados conforme a árvore indicada acima.
+- Only remove duplicates if you are certain they represent the same item;
+- Datasets with memes or viral images may contain intentional repetitions;
+- Always keep a copy of your original CSV.
 
+### 06. Dataset sampling (optional)
+You may apply sampling to:
 
+- Reduce dataset size;
+- Balance categories;
+- Test subsets before processing the full dataset.
 
-## Sobre o Autor
+### 07. Image naming strategies
+Before downloading, choose how you want your images to be named:
 
-**Elias Bitencourt** é Professor Adjunto no Curso de Design da Universidade do Estado da Bahia (UNEB), com Doutorado em Comunicação pela FACOM/UFBA e Mestrado em Cultura e Sociedade pelo IHAC/UFBA. Foi pesquisador visitante no Centro Milieux (Concordia University, Canadá) em 2019. Atualmente, coordena o **Datalab/Design (CNPq)** na UNEB, um centro de pesquisa em visualização de dados e metodologias digitais. Sua pesquisa investiga visualização de dados, estudos de plataformas, imaginários digitais e mediação algorítmica nas relações sociais. É pesquisador colaborador no **Inova Media Lab** (Universidade Nova de Lisboa) e na rede internacional **Public Data Lab**. [Mais em](https://eliasbitencourt.com)
+- **Original Name**: keeps the name from the URL (may cause conflicts if names repeat);
+- **HEX**: generates unique names with hexadecimal identifiers;
+- **pHash**: uses the perceptual hash of the image, useful for identifying visually similar content.
+
+### After configuring
+**Continue running each cell in sequence**, always reading the instructions and responding to the displayed widgets. MOODIE will take care of the rest automatically.
+
+At the end of execution, a `.csv` dataset with metadata from the downloaded images will be generated, and you will be able to access everything within the subdirectories created as shown above.
+
+---
+
+## About the Author
+
+**Elias Bitencourt** is an Associate Professor in the Design Program at the State University of Bahia (UNEB). He holds a PhD in Communication from FACOM/UFBA and an MA in Culture and Society from IHAC/UFBA. He was a visiting researcher at the Milieux Institute (Concordia University, Canada) in 2019. He currently leads **Datalab/Design (CNPq)** at UNEB, a research center focused on data visualization and digital methods. His research investigates data visualization, platform studies, digital imaginaries, and algorithmic mediation in social relations. He is a collaborating researcher at the **Inova Media Lab** (Universidade Nova de Lisboa) and the international **Public Data Lab** network. [More at](https://eliasbitencourt.com)
 
 ---
 
 ## Status
 
-O projeto encontra-se em **fase beta** e está em desenvolvimento contínuo. Contribuições, sugestões e colaborações são bem-vindas.
+The project is currently in **beta phase** and under continuous development. Contributions, suggestions, and collaborations are welcome.
 
 ---
 
-## Licença
+## License
 
-Este repositório está sob uma **Licença de Uso Restrito com Atribuição**.  
-O conteúdo pode ser utilizado para fins acadêmicos e não-comerciais com devida atribuição ao autor.  
-Modificações ou redistribuição exigem permissão.  
-Veja o arquivo [`LICENSE.txt`](./LICENSE.txt) para mais detalhes.
+This repository is under a **Restricted Use License with Attribution**.  
+Content may be used for academic and non-commercial purposes with proper attribution to the author.  
+Modifications or redistribution require permission.  
+See the [`LICENSE.txt`](./LICENSE.txt) file for more details.
 
-## Como citar moodie (formato APA):
+## How to cite MOODIE (APA format):
 
-Bitencourt, E. (2025). *MOODIE Image Trends: Modular Observational & Operational Design Image Explorer* (Versão beta) [Repositório GitHub]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie
+Bitencourt, E. (2025). *MOODIE Image Trends: Modular Observational & Operational Design Image Explorer* (Beta version) [GitHub repository]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie
+
