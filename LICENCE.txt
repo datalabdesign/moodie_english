@@ -1,29 +1,29 @@
-Licença de Uso Restrito com Atribuição
+# Restricted Use License with Attribution
 
-Este repositório e seus arquivos associados (incluindo notebooks Jupyter, scripts, imagens e materiais auxiliares) são disponibilizados para fins educacionais, de pesquisa e uso não-comercial, sob as seguintes condições:
+This repository and its associated files (including Jupyter notebooks, scripts, images, and auxiliary materials) are made available for educational, research, and non-commercial use under the following conditions:
 
-1. É obrigatória a atribuição clara e visível ao autor original em qualquer forma de uso, total ou parcial, incluindo apresentações, publicações, repositórios derivados, aulas, cursos ou relatórios.
+1. Clear and visible attribution to the original author is required in any form of use, whether total or partial, including presentations, publications, derivative repositories, classes, courses, or reports.
 
-2. Não é permitida a modificação, adaptação, redistribuição ou reedição deste material, total ou parcial, sem autorização expressa e por escrito do autor.
+2. Modification, adaptation, redistribution, or re-publication of this material, in whole or in part, is not permitted without explicit written authorization from the author.
 
-3. É permitido o uso do código e dos materiais como referência ou apoio, desde que não sejam redistribuídos ou utilizados como base para produtos, ferramentas ou serviços derivados, sem consentimento prévio.
+3. Use of the code and materials as reference or support is allowed, provided they are not redistributed or used as the basis for derivative products, tools, or services without prior consent.
 
-4. O uso comercial, em qualquer modalidade, não é permitido sem negociação direta com o autor.
+4. Commercial use of any kind is not permitted without direct negotiation with the author.
 
-5. Os arquivos e códigos disponibilizados neste repositório não estão licenciados sob um modelo de software livre ou licença open source padrão (como MIT, GPL ou Apache) e não devem ser reutilizados como tais.
+5. The files and code in this repository are not licensed under any free software or standard open-source license (such as MIT, GPL, or Apache) and should not be reused as such.
 
-6. A cópia literal, modificação ou redistribuição não autorizada, mesmo que com atribuição, constitui violação desta licença.
-
----
-
-Autor: Elias Bitencourt  
-Email: ebitencourt@uneb.br  
-Instituição: Universidade do Estado da Bahia – UNEB  
-Laboratório: Datalab Design (CNPq)  
-Ano: 2025
+6. Unauthorized copying, modification, or redistribution, even with attribution, constitutes a violation of this license.
 
 ---
 
-Como citar este repositório (formato APA):
+**Author:** Elias Bitencourt  
+**Email:** ebitencourt@uneb.br  
+**Institution:** Universidade do Estado da Bahia – UNEB  
+**Laboratory:** Datalab Design (CNPq)  
+**Year:** 2025
 
-Bitencourt, E. (2025). *MOODIE: Modular Observational & Operational Design Image Explorer* (Versão beta) [Repositório GitHub]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie
+---
+
+### How to cite this repository (APA format):
+
+Bitencourt, E. (2025). *MOODIE: Modular Observational & Operational Design Image Explorer* (Beta version) [GitHub repository]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie
