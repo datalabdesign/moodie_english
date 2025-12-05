@@ -76,7 +76,7 @@ Extra libraries are installed automatically by the notebook (`tensorflow`, `dist
 
 ### 2.1 Sampling (Sample Dataset)
 
-> **Objective**  
+> **Goal**  
 > Create a representative (or balanced) subset of the corpus – via downsizing, upsizing or random sampling – enabling rapid prototyping and control over how many images will be processed.
 
 *Optional step* — allows construction of random subsets.  
@@ -93,7 +93,7 @@ If you only have a folder of images, the interface automatically detects that an
 
 ### 2.2 Visual Feature Extraction
 
-> **Objective**  
+> **Goal**  
 > Convert each image into a numerical vector (embedding) using pretrained computer vision models, providing the basis for all visual similarity comparisons.
 
 Moodie uses different computer vision models to “read” your images and convert them into numeric representations.  
@@ -148,7 +148,7 @@ The models are organized by architecture:
 
 ### 2.3 Visual Duplicate Removal
 
-> **Objective**  
+> **Goal**  
 > Detect and separate exact or near-identical copies (hash, pHash, embedding) to maintain only unique images and avoid bias in the following analyses.
 
 After extracting visual features, Moodie can identify and remove duplicates.
@@ -181,7 +181,7 @@ After extracting visual features, Moodie can identify and remove duplicates.
 
 ### 2.4 Color Analysis and Palette Generation
 
-> **Objective**  
+> **Goal**  
 > Map color distribution, group colors into perceptual zones, and generate thematic/accessible palettes summarizing the corpus's visual identity.
 
 Moodie analyzes the chromatic content of your image dataset.
@@ -232,7 +232,7 @@ If present, Moodie extracts:
 
 ### 2.5 Corpus Visualization
 
-> **Objective**  
+> **Goal**  
 > Build ordered imagewalls (global or grouped) to enable rapid inspection and reveal patterns, duplicates, and aesthetic coherence.
 
 ![](exemplo_image_wall.jpg)
@@ -265,7 +265,7 @@ Outputs saved in `imagewall/`.
 
 ### 2.6 · Moodie Trends — Recommendation System
 
-> **Objective**  
+> **Goal**  
 > Find similar images, curate sets, and generate color dashboards using combinations of **visual similarity (embeddings)** and **optional metadata**.
 
 ![](dashboard_exemplo.png)
