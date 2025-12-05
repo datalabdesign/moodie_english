@@ -2,9 +2,9 @@
 
 # MOODIE Grabber (Image Collection Module)
 
-**MOODIE Grabber** is the image collection module of the [MOODIE](https://github.com/datalabdesign/moodie) tool, developed to enable the download and preprocessing of images from a CSV file containing links. It is currently in **beta**, serving as the first functional module of the MOODIE tool.
-
 > This repository was originally developed in Brazilian Portuguese and is currently undergoing translation into English. At this stage, only the documentation has been translated; the notebook interfaces and widgets are still in Portuguese. Future updates will provide full English support.
+
+**MOODIE Grabber** is the image collection module of the [MOODIE](https://github.com/datalabdesign/moodie) tool, developed to enable the download and preprocessing of images from a CSV file containing links. It is currently in **beta**, serving as the first functional module of the MOODIE tool.
 
 This module was designed as a practical introduction to using images in research pipelines for design, providing everything from collection to the first structured metadata that feeds later stages of visual analysis and creative exploration.
 
