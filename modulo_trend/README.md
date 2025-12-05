@@ -3,6 +3,8 @@
 # MOODIE Image Trends · Trend Analysis Module
 > **A visual learning pathway for those who do not program yet.**
 
+> This repository was originally developed in Brazilian Portuguese and is currently undergoing translation into English. At this stage, only the documentation has been translated; the notebook interfaces and widgets are still in Portuguese. Future updates will provide full English support.
+
 MOODIE Image Trends is a notebook that transforms **a collection of images** into a set of **dashboards, palettes, and recommendations** ready for trend analysis.
 
 It was designed for courses in **Visual Research**, **Fashion Design**, **UX Research**, **Digital Methods** and **Digital Humanities**, where students benefit from advanced AI techniques integrated into design processes **without writing code**. 
