@@ -109,11 +109,11 @@ The models are organized by architecture:
 
 | Model              | Output Type                     | Recommended Use                                                                 | Reference                                                    |
 | -------------------| -------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------|
-| **MobileNetV2**     | Features + Top-3 ImageNet labels | Fast analysis of color/texture; ideal for large collections and rapid tests     | Sandler et al., 2018 |
-| **VGG16**           | Features + Top-3 ImageNet labels | Strong on texture and edges; good for visual grouping by local patterns         | Simonyan & Zisserman, 2014 |
-| **ResNet50**        | Features + Top-3 ImageNet labels | Balanced between global form and texture; good for category differentiation     | He et al., 2015 |
-| **InceptionV3**     | Features + Top-3 ImageNet labels | Sensitive to scale variation; useful for images with multi-scale objects        | Szegedy et al., 2015 |
-| **EfficientNet-B0** | Features + Top-3 ImageNet labels | Stable for natural scenes; captures fine-grained details and context            | Tan & Le, 2019 |
+| **MobileNetV2**     | Features + Top-3 ImageNet labels | Fast analysis of color/texture; ideal for large collections and rapid tests     | [Sandler et al., 2018](https://arxiv.org/abs/1801.04381)  |
+| **VGG16**           | Features + Top-3 ImageNet labels | Strong on texture and edges; good for visual grouping by local patterns         | [Simonyan & Zisserman, 2014](https://arxiv.org/abs/1409.1556) |
+| **ResNet50**        | Features + Top-3 ImageNet labels | Balanced between global form and texture; good for category differentiation     | [He et al., 2015](https://arxiv.org/abs/1512.03385) |
+| **InceptionV3**     | Features + Top-3 ImageNet labels | Sensitive to scale variation; useful for images with multi-scale objects        | [Szegedy et al., 2015](https://arxiv.org/abs/1512.00567)  |
+| **EfficientNet-B0** | Features + Top-3 ImageNet labels | Stable for natural scenes; captures fine-grained details and context            | [Tan & Le, 2019](https://arxiv.org/abs/1905.11946) |
 
 ---
 
@@ -121,7 +121,7 @@ The models are organized by architecture:
 
 | Model        | Output Type                    | Recommended Use                                                                 | Reference |
 |--------------|--------------------------------|----------------------------------------------------------------------------------|-----------|
-| **ViT16_1k** | Features + Top-3 ImageNet labels | Captures composition and co-occurrence patterns; useful for complex layouts     | Dosovitskiy et al., 2020 |
+| **ViT16_1k** | Features + Top-3 ImageNet labels | Captures composition and co-occurrence patterns; useful for complex layouts     | [Dosovitskiy et al., 2020](https://arxiv.org/abs/2010.11929)  |
 
 ---
 
@@ -129,247 +129,298 @@ The models are organized by architecture:
 
 | Model         | Output Type                       | Recommended Use                                                                | Reference |
 |---------------|------------------------------------|---------------------------------------------------------------------------------|-----------|
-| **ViT-GPT2**  | Features + Automatic caption (EN)  | Generates short captions; useful for quick triage and contextual description   | ViT + GPT-2 |
-| **BLIP (base)** | Features + Automatic caption (EN) | Generates more semantic descriptions; useful for thematic exploration          | Li et al., 2022 |
+| **ViT-GPT2**  | Features + Automatic caption (EN)  | Generates short captions; useful for quick triage and contextual description   | [ViT](https://arxiv.org/abs/2010.11929) + [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) |
+| **BLIP (base)** | Features + Automatic caption (EN) | Generates more semantic descriptions; useful for thematic exploration          | [Li et al., 2022](https://arxiv.org/abs/2201.12086) |
 
 ---
 
 > Important: CNN/ViT ImageNet models return labels limited to ImageNet-1k (~1000 classes).  
 > Captioning models produce free-text captions, ideal for semantic analyses.
 
-**How the process works**
+**How the process works:**
 
-1. You select one or more models.  
-2. Each image is processed according to the chosen model(s).  
-3. Moodie generates columns `*_features`, `*_labels`, `*_scores`.  
-4. CSVs are saved and used in subsequent modules.
+1. **Model selection:** You may choose one or more models, mixing architectures if desired.  
+2. **Feature extraction:** Each image is processed according to the selected model.  
+3. **Vector and label generation:** Up to three columns are created per model: `*_features`, `*_labels`, `*_scores`.  
+4. **Storage and visualization:** Results are saved as CSV files and used by the subsequent Moodie modules.
+
+> Tip: for more precise descriptions of action or context, use models such as BLIP or ViT-GPT2.  
+> For faster performance with large archives, start with MobileNetV2 or EfficientNet-B0.
 
 ---
 
 ### 2.3 Visual Duplicate Removal
-
 > **Goal**  
-> Detect and separate exact or near-identical copies (hash, pHash, embedding) to maintain only unique images and avoid bias in the following analyses.
+> Detect and separate exact or near-identical copies (hash, pHash, and embeddings) to keep only unique images and avoid bias in subsequent analyses.
 
-After extracting visual features, Moodie can identify and remove duplicates.
+After extracting the visual features of your images, Moodie can automatically identify and remove images that are duplicated or highly similar within your collection. This is useful for cleaning your dataset, avoiding redundancy in later analyses, and ensuring that detected visual trends are representative of unique images.
 
 ![](exemplo_duplicatas.png)
 
-**How Moodie identifies duplicates**
+**How does Moodie identify duplicates?**
 
-1. **Exact Copies (MD5):** Byte-identical files.  
-2. **Near-identical (pHash):** Visually similar even with small edits or compression.  
-3. **Deep Visual Similarity (Embedding):** Measures proximity of embeddings.
+Moodie uses three methods to detect duplicates, checking different levels of similarity:
 
-**During removal**
+1. **Exact Copies (MD5 Hash):** Looks for files that are identical byte-by-byte. This is equivalent to checking whether two files are the exact same copy.  
+2. **Near-Identical Copies (pHash):** Identifies images that are visually very similar even when small differences exist (such as compression artifacts or minor edits). Think of it as finding photos that are almost identical but with slight variations.  
+3. **Deep Visual Similarity (Embedding):** Uses the visual “codes” (embeddings) extracted in the previous stage to find images that are deeply similar at a semantic level, even when they are not exact or near-exact copies. If you used more than one model, it is recommended to remove duplicates using the same model you intend to use for subsequent analyses.
 
-* Anchor image chosen (first one).  
-* Duplicates moved to folder `duplicatas`.  
-* Progress bars displayed.  
-* ZIP generated with:  
-  - clean dataset  
-  - duplicate dataset  
-  - 3 imagewalls  
+**What happens during the removal process?**
 
-**Why remove duplicates**
+* **Anchor Selection:** For each group of duplicate images, Moodie selects the first image encountered as the “anchor” (the one that will be kept).  
+* **Moving Duplicates:** Identified copies are automatically moved to a folder named `duplicatas` inside your `imagens/` directory. This keeps your main dataset clean while still allowing you to review the duplicates if needed.  
+* **Process Monitoring:** While Moodie works, progress bars display the status of the analysis.  
+* **Final Output:** Once the process is complete, a **Download ZIP** button appears. Clicking it provides a compressed `.zip` file containing:  
+    * A “clean” dataset (without the removed duplicates).  
+    * A log of all duplicates that were found.  
+    * Image walls showing:  
+        * All images from the initial dataset.  
+        * Only the unique images (after duplicate removal).  
+        * The collection of images identified as duplicates.
 
-* More accurate analyses  
-* Saves space  
-* Better organization  
+**Why remove duplicates?**
 
+* **More accurate analyses:** Ensures that visual trends and subsequent analytical results are not distorted by multiple copies of the same image.  
+* **Space efficiency:** Helps reduce the size of your image collection, making it easier to manage and process.  
+* **Better organization:** Keeps your primary dataset more organized and focused on unique items.
+
+By using Moodie’s duplicate-removal system, you ensure a cleaner and more reliable visual dataset for your explorations and trend analyses!
+
+> **Note:** If you are studying memes, virality, or repetition-based patterns, removing duplicates may *not* be recommended. Moodie provides the tools, but **you** are the one who should decide what makes sense for your research, ok?
 ---
 
 ### 2.4 Color Analysis and Palette Generation
-
 > **Goal**  
-> Map color distribution, group colors into perceptual zones, and generate thematic/accessible palettes summarizing the corpus's visual identity.
+> Map the chromatic distribution of the corpus, group colors into perceptual “zones,” and generate thematic and accessible palettes that summarize the visual identity of the dataset.
 
-Moodie analyzes the chromatic content of your image dataset.
+This stage of Moodie dives into the colors of your image collection to create a visual map of the dominant chromatic distribution and suggest thematic palettes relevant to your corpus.
 
-**Perceptual Color Map**
+**Perceptual Color Map:**
 
-Every point represents a color in the dataset.  
-Proximity = perceptual similarity.
+Imagine a map where each point represents a color found in your image collection. Visually similar colors appear close to one another, forming “regions” of predominant hues. Moodie generates this perceptual map by combining the colors of all images and applying an algorithm that spatially clusters similar colors. The intensity of color in certain areas indicates how concentrated those tones are within the corpus.
+
+**Visual Example:**
 
 ![](color_map.png)
 
-**How Moodie finds “color zones”**
+*This map shows how colors are distributed across your image collection. Areas with vibrant tones indicate a higher occurrence of those hues.*
 
-1. Division by hue (24 bands, 15° each).  
-2. Spatial clustering on perceptual map.  
-3. Statistical averaging for each zone.
+**How does Moodie find the “color zones”?**
 
-**Thematic Palettes**
+Moodie uses concepts from **color theory** to identify meaningful regions within the perceptual map. It relies on the idea of the **color wheel**, where hues are arranged in a cycle based on their relationships.
 
-| Theme | Logic | Metrics |
+1. **Hue Division:** Moodie divides the hue spectrum into 24 hue bands (each spanning 15 degrees on the color wheel), assigning a name to each band (e.g., Red, Orange, Yellow, Green, Blue, Violet).  
+2. **Proximity Grouping:** In the perceptual map, colors with similar hues and close spatial positions tend to cluster. The algorithm identifies these clusters as predominant “color zones” in your corpus.  
+3. **Statistical Analysis:** For each zone, Moodie calculates the average tone to determine the representative color of that region.
+
+**Thematic Palettes:**
+
+Beyond the perceptual map, Moodie extracts thematic color palettes, suggesting sets of 5 colors that may be relevant or representative of your corpus from different analytical perspectives.
+
+**Logic and Metrics Behind Thematic Palettes:**
+
+The selection of colors for each thematic palette relies on a combination of the color distribution within the perceptual map and metrics that evaluate the characteristics of colors inside each “zone.” The general logic is to identify distinct and representative colors from different areas of the map, prioritizing those that best fit the intended thematic focus.
+
+| Palette Theme | Core Logic | Metrics Used |
 |---|---|---|
-| Colorful | High saturation, mid luminance | Saturation, luminance, color distance |
-| Bright | Light and saturated | High luminance, high saturation |
-| Soft | Light and low saturation | High luminance, low saturation |
-| Deep | Dark and saturated | Low luminance, high saturation |
-| Dark | Predominantly dark colors | Luminance, saturation, frequency |
-| Accessible | Distinguishable under color-blindness simulation | Delta-E under protan/deutan/tritan simulation |
+| **Colorful** | Prioritizes highly saturated colors with mid-range lightness, aiming for variety and vibrancy. | High saturation, lightness around 0.5, color distance between samples. |
+| **Bright** | Selects light and saturated colors, evoking energy and emphasis. | High lightness, high saturation. |
+| **Soft** | Chooses light and low-saturation colors (pastel tones), conveying delicacy and calmness. | High lightness, low saturation. |
+| **Deep** | Opts for dark and saturated colors, suggesting intensity and depth. | Low lightness, high saturation. |
+| **Dark** | Focuses on predominantly dark colors, with some saturation to avoid purely achromatic tones. | Low lightness, moderate to high saturation, weight of dark-color frequency. |
+| **Accessible** | Selects colors distinguishable for individuals with different types of color blindness (protanopia, deuteranopia, tritanopia). | Color distance (Delta E) simulated for various types of color blindness (minimum safe contrast). |
 
-**Renaming Images**
+For the **Accessible** palette, Moodie attempts to select one representative color from each of the five identified color zones, ensuring that the chosen colors provide sufficient contrast to be distinguishable for users with color vision deficiencies. If it is not possible to retrieve five distinct and safe colors, the palette may contain fewer colors, and an alert is issued to indicate this.
 
-| Renaming Criterion | Description | Useful for |
+
+**Renaming Images:**
+
+Moodie offers the option to rename your image files based on different criteria extracted during the analysis:
+
+| Renaming Criterion | Description | Useful for… |
 |---|---|---|
-| Do not rename | Keeps original filenames | Existing workflows |
-| Rename by HEX | Use dominant color HEX | Organizing images by color |
-| Rename by pHash | Use perceptual hash | Grouping visually similar images |
+| **Do not rename** | Keeps the original filenames. | When you already have a naming convention or do not want to modify file names. |
+| **Rename by HEX** | Renames files using the hexadecimal code of the dominant color detected in each image. | Organizing images visually according to their primary color. |
+| **Rename by pHash** | Renames files using the image’s pHash (perceptual hash). The pHash generates a visual “fingerprint,” useful for identifying near-duplicate images. | Grouping visually similar images (even when small edits or variations exist). |
 
-**EXIF Metadata**
+**EXIF Metadata:**
 
-If present, Moodie extracts:
+EXIF (Exchangeable Image File Format) refers to metadata embedded in image files by most digital cameras and smartphones. When present, Moodie can extract a range of useful information, including:
 
-* timestamp  
-* camera model  
-* ISO, aperture, shutter  
-* lens model  
-* GPS coordinates  
+* **Capture Date and Time:** When the photo was taken.  
+* **Camera/Phone Model:** The device used to capture the image.  
+* **Camera Settings:** ISO, aperture, shutter speed, focal length.  
+* **Lens Information:** Lens model used in the capture.  
+* **GPS Data:** Geographic coordinates (latitude and longitude) of where the photo was taken.
+
+These metadata elements can be important for contextual analysis and for understanding the provenance of your images. Moodie checks for their presence and makes them available for further exploration in your dataset.
 
 ---
 
 ### 2.5 Corpus Visualization
-
 > **Goal**  
-> Build ordered imagewalls (global or grouped) to enable rapid inspection and reveal patterns, duplicates, and aesthetic coherence.
+> Build ordered image-walls (general or grouped) that support rapid visual inspection, revealing patterns, duplications, and the aesthetic coherence of the dataset.
+
+This stage of Moodie enables the creation of visual representations of your image collection, supporting exploration and pattern identification. You can generate image walls that arrange your images in a grid, with options to filter, group, and display relevant information.
 
 ![](exemplo_image_wall.jpg)
 
-**Capabilities**
+**What can you do?**
 
-* Global visualization  
-* Group-based visualization  
-* Filtering (representativity, ranking, dominant color)  
-* Palette display  
-* Optional duplicate removal  
+* **General Visualization:** Create an overview of the entire corpus in a single image grid.  
+* **Visual Grouping:** Organize images into separate walls based on categories or specific characteristics (for example, dominant color or visual similarity if you have executed the clustering stage).  
+* **Filtering:** Display only a subset of images based on criteria such as representativeness (the most typical images of a group), ranking (if you have classification scores associated with the images), or dominant color.  
+* **Color Palette Display:** Automatically include the dominant color palette of each group directly within the visual wall.  
+* **Duplicate Removal (Optional):** Before generating visualizations, you may remove duplicate or highly similar images to obtain a cleaner representation of your unique corpus.
 
-**Workflow**
+**How does it work?**
 
-1. Choose image column  
-2. (Optional) choose grouping column  
-3. Select filtering method:  
-   * None  
-   * Representativity  
-   * Ranking  
-   * Dominant color  
-4. Thumbnail size  
-5. (Optional) square crop  
-6. (Optional) palette display  
-7. (Optional) remove duplicates  
+1. **Image Column Selection:** First, you indicate which column in your dataset contains the filenames of the images.  
+2. **Grouping Options (Optional):** If desired, you may choose a column to group your images. Moodie will create a separate image wall for each unique group in that column. For example, if you have a column named “Style,” you can generate one wall for each distinct style.  
+3. **Filtering Options (Optional):**  
+    * **None:** Displays all images (after duplicate removal, if selected).  
+    * **Representativeness:** For each group (or for the entire corpus, if no grouping is used), Moodie identifies the most visually representative images based on previously extracted features. You may specify how many “Top N” images to display per group.  
+    * **Ranking:** If you have a ranking column (for example, popularity scores), you can use this option to display images with the highest or lowest rankings (Top N). You must select the ranking column and the order (ascending or descending).  
+    * **Dominant Color:** Allows you to display images with the lightest or darkest dominant colors (Top N), using the dominant-color column extracted earlier.  
+4. **Thumbnail Size:** You can define the desired width and height of the thumbnails displayed on the image wall. Moodie automatically adjusts the layout to accommodate the number of images.  
+5. **Cropping (Optional):** The “Crop (Square)” option instructs Moodie to crop images into a square format before resizing them into thumbnails, ensuring a visually uniform grid.  
+6. **Color Palettes (Optional):** You may choose to include a strip showing the dominant color and a small palette of representative colors beneath each image wall (for the overall visualization and/or for each group).  
+7. **Duplicate Removal (Optional):** When selected, Moodie checks for and removes images that are exact copies, near-identical visuals (highly similar images), or very close in terms of extracted visual features (embeddings). **If you have already executed the duplicate-removal step earlier, you do not need to enable this option again.**
 
-Outputs saved in `imagewall/`.
+**How does Moodie handle duplicate removal?**
+
+If you choose to remove duplicates, Moodie applies a sequence of checks:
+
+1. **Exact Duplicates (MD5 Hash):** It compares a unique “code” generated from the content of each file. If two codes match, the files are considered exact copies.  
+2. **Near-Identical Duplicates (pHash):** It uses a perceptual hash (pHash) algorithm that creates a visual “fingerprint” of the image. Images whose pHashes differ by up to 4 bits are treated as near-identical copies.  
+3. **Feature-Based Duplicates (Optional):** If you have already extracted visual features, Moodie can compare these “visual codes.” Images with very close codes (very high cosine similarity) are considered visually similar and treated as duplicates.
+
+Moodie keeps the first image found in each duplicate group and removes the others before generating the visual walls. A summary of the number of duplicates removed by each method is displayed.
+
+**Output:**
+
+At the end of the process, Moodie generates one or more `.jpg` files containing the visual walls of your corpus (overall and/or grouped), saved in a folder named `imagewall` inside your `project_dir`. If you chose to include color palettes, they will appear beneath each wall. You can view these images directly in your analysis environment.
+
+Corpus visualization is a supportive feature for obtaining quick insights into the visual content of your image collection, identifying patterns, and communicating your findings in a visually rich way.
 
 ---
 
 ### 2.6 · Moodie Trends — Recommendation System
 
 > **Goal**  
-> Find similar images, curate sets, and generate color dashboards using combinations of **visual similarity (embeddings)** and **optional metadata**.
+> Find similar images, build curations, and generate color panels using combinations of **visual similarity (embeddings)** and **optional metadata**. Beyond these goals, Moodie Trends can also be used as a practical tool for examining patterns, mapping trends within a dataset, or conducting visual searches across an image library.
+
+This module was designed with two primary aims: to teach, in a practical and intuitive way, the rationale of a recommendation algorithm, and to investigate biases and discrepancies that emerge when different computer vision architectures are inserted into the same recommendation system. The idea is to [*borrow the algorithmic logic*](https://eliasbitencourt.com/research) of hybrid recommendation systems and reapply it as a methodological strategy. In other words, to use recommendation algorithms **as tools for studying the very curations produced by recommendation systems themselves**.
+
+---
+
 
 ![](dashboard_exemplo.png)
 
----
-
 #### 1. Initial Configuration
 
-| Step | Description | What You Do |
-|---|---|---|
-| Image Column | Filename in the DataFrame | Select correct column |
-| Embedding Column | Vector of visual features | Select correct column |
-| Similarity Metric | Cosine, Euclidean, Correlation | Choose metric |
-| Embedding Weight | Weight relative to metadata | Adjust slider (0–10) |
+| Step                        | What it is                                                        | What you do in the interface |
+|----------------------------|-------------------------------------------------------------------|------------------------------|
+| **Image Column**           | Filename of the image in the DataFrame.                           | Select the correct column from the menu. |
+| **Embedding Column**       | Visual feature vectors (generated in the previous module).         | Select the embedding column. |
+| **Similarity Metric**      | Formula that measures the “distance” between vectors (Cosine, Euclidean, Correlation). | Choose from the menu. |
+| **Embedding Weight**       | How much visual similarity should weigh relative to optional metadata. | Adjust the slider (0–10). |
 
 ---
 
-#### 2. Similarity Metrics
+#### 2. Similarity Metrics (Embeddings)
 
-| Metric | How it works | Use when… |
-|---|---|---|
-| Cosine | Compares angle between vectors | Structure/composition similarity |
-| Euclidean | Geometric distance | Color/texture proximity |
-| Correlation | Linear co-variation | Similar lighting/color patterns |
+| Metric        | How it computes similarity                                                                                   | Use when…                                                                                                   |
+|---------------|--------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| **Cosine**    | Measures the angle between vectors, ignoring magnitude.                                                      | You want to find images with similar visual patterns (composition, elements) regardless of brightness or contrast. |
+| **Euclidean** | Computes geometric distance between vectors. Smaller distance indicates higher similarity.                   | You want to find images that are globally close in terms of color and texture.                               |
+| **Correlation** | Measures linear relationships between vectors, focusing on similar variations in visual characteristics.   | You want to find images with similar lighting changes or color variations, ignoring absolute feature levels. |
 
 ---
 
 #### 3. Extra Columns (optional)
 
-Each column gets:
+After selecting the columns and clicking **“Proceed to Adjustments”**, each column appears with three controls:
 
-1. Aggregator  
-2. Separator  
-3. Weight  
+1. **Aggregator**  
+2. **Separator**  
+3. **Weight**
 
-##### 3.1 Aggregators
+These three settings determine **how** the column influences the final similarity calculation.
 
-| Column | Aggregator | How it works | Use when |
-|---|---|---|---|
-| Numeric | none | Uses first value | Single value |
-|  | mean | Mean of split values | Multiple numbers |
-|  | median | Median | Outlier-resistant |
-| Text/Set | none | Literal string | Single label |
-|  | jaccard | Set similarity | Multi-term fields |
+##### 3.1 Available Aggregators
+
+| Column Type        | Aggregator | How it works | When to use |
+|--------------------|-----------|--------------|-------------|
+| **Numeric**        | `none`    | Uses the first value in the cell. | When there is only one numeric value (e.g., age, single price). |
+|                    | `mean`    | Computes the average of the values split by the separator. | When there are multiple numbers and you want the overall tendency. |
+|                    | `median`  | Computes the median of the values split by the separator. | When you want to reduce the impact of very high or very low values. |
+| **Text / Set**     | `none`    | Literal string comparison. | When the cell has a single label (“male”, “Y2K”). |
+|                    | `jaccard` | Computes the Jaccard similarity between **sets of terms**. The value ranges from 0 (no overlap) to 1 (all terms overlap). | When the cell contains **multiple terms** (tags, styles, colors) separated by commas or another delimiter. |
 
 ##### 3.2 Separator
 
-Examples:
+*Character that splits the cell into pieces before the aggregator is applied.*
 
-| Cell | Separator | Effect |
-|---|---|---|
-| 10,20,30 | , | Three numbers |
-| blue;red;green | ; | Three terms |
-| White | none | Single value |
+| Example cell            | Correct separator | Effect |
+|-------------------------|-------------------|--------|
+| `10,20,30`              | `,`               | Three numbers → mean or median. |
+| `azul;vermelho;verde`   | `;`               | Three terms → Jaccard similarity between sets. |
+| `Branco`                | *(empty)*         | Cell treated as a single value. |
+
 
 ##### 3.3 Weight
 
-0–10 scale.
+A 0–10 scale indicating **how strongly** the extra column influences the final similarity score relative to the embedding weight.
 
 ---
 
 #### 4. Similarity Search
 
-| Step | What it defines | Meaning |
-|---|---|---|
-| Reference Mode | Source of reference | Internal or upload |
-| Reference Image | Query | Filename or upload |
-| Top N | Output size | Slider |
-| Sort | Ranking | Relevance / Contrast / Concordance |
+| Step                     | What it defines                               | In practice |
+|--------------------------|------------------------------------------------|-------------|
+| **Reference Mode**       | Source of the example image.                  | *Internal image* or *External upload*. |
+| **Reference Image**      | File used as the “query.”                     | Type the filename (internal) or upload a file. |
+| **Top N**                | Number of images to return.                    | Adjust the slider. |
+| **Ordering Criterion**   | How the Top N results are ranked (Relevance, Contrast, Concordance). | Choose from the menu. |
 
-**External image workflow**
+##### How Moodie handles **external images**
 
-1. Image is embedded  
-2. Compared to internal  
-3. Closest internal becomes anchor  
-4. Entire pipeline proceeds normally  
+1. The image is uploaded and receives **the same embedding model** selected for the recommendation.  
+2. Moodie computes the similarity between this external vector and **all** internal images.  
+3. The most similar internal image becomes the “bridge” (internal reference).  
+4. The rest of the algorithm proceeds exactly as if the reference were internal.
 
----
+This allows users to query with **any** external image (for example, from Pinterest) and receive recommendations from within their own corpus.
 
-#### 5. Sorting Criteria
-
-| Criterion | Logic | Meaning |
-|---|---|---|
-| Relevance | High similarity ranks first | Most similar |
-| Contrast | 1 − similarity | Most different |
-| Concordance | 1 − 2·|sim − 0.5| | Mid-range similarity |
 
 ---
 
-#### 6. Outputs
+#### 5. Ordering Criteria
 
-- Full and summary **CSV**  
-- **Imagewall** of Top-N  
-- **Color dashboards** (dominant & representative)  
-- **Accessible palettes**  
-- **ZIP** with everything  
-
-These resources allow quick assessment of **similarity, diversity and chromatic composition**.
+| Criterion        | Scoring logic                                 | Typical result |
+|------------------|-----------------------------------------------|----------------|
+| **Relevance**    | Score = similarity (1 → 0).                    | “Most similar” first. |
+| **Contrast**     | Score = 1 − similarity.                        | “Most different” first (diversity-oriented search). |
+| **Concordance**  | Score = 1 − 2·|sim − 0.5|.                     | Images that sit in a “middle zone” between similar and dissimilar. |
 
 ---
+
+#### 6. Outputs Generated
+
+- **Complete and summary CSVs** with scores and metadata.  
+- **Image-wall** of the Top N results (rank order).  
+- **Color dashboards** (dominant and representative) + **accessible palettes**.  
+- **ZIP** containing recommended images, reports, and dashboards for quick download.
+
+These resources allow students and researchers to rapidly assess **similarity, diversity, and chromatic composition** within their recommendations.
+
+---
+
 
 ## About the Author
 
-**Elias Bitencourt** is an Assistant Professor at the Design Program of the State University of Bahia (UNEB). He holds a PhD in Communication from FACOM/UFBA and an MA in Culture and Society from IHAC/UFBA. He was a visiting researcher at the Milieux Institute (Concordia University, Canada) in 2019. He currently leads **Datalab/Design (CNPq)**, a research center focused on data visualization and digital methods. His research investigates data visualization, platform studies, digital imaginaries, and algorithmic mediation in social relations. He is a collaborating researcher at the **Inova Media Lab** (Universidade Nova de Lisboa) and at the international **Public Data Lab**.  
+**Elias Bitencourt** is an Associate Professor at the Design Program of the State University of Bahia (UNEB). He holds a PhD in Communication from FACOM/UFBA and an MA in Culture and Society from IHAC/UFBA. He was a visiting researcher at the Milieux Institute (Concordia University, Canada) in 2019. He currently leads **Datalab/Design (CNPq)**, a research center focused on data visualization and digital methods. His research investigates data visualization, platform studies, digital imaginaries, and algorithmic mediation in social relations. He is a collaborating researcher at the **Inova Media Lab** (Universidade Nova de Lisboa) and at the international **Public Data Lab**.  
 [More at](https://eliasbitencourt.com)
 
 ---
@@ -389,4 +440,4 @@ See the file [`LICENSE.txt`](./LICENSE.txt) for more details.
 
 ## How to cite MOODIE (APA format):
 
-Bitencourt, E. (2025). *MOODIE Image Trends: Modular Observational & Operational Design Image Explorer* (Beta version) [GitHub repository]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie
+Bitencourt, E. (2025). *MOODIE Image Trends: Modular Observational & Operational Design Image Explorer* (Beta version) [GitHub repository]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie_english
