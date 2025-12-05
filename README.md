@@ -3,6 +3,8 @@
 # MOODIE · Modular Observational & Operational Design Image Explorer (Light)
 > **Open-source (beta) tool for collecting, exploring, and visually analyzing large image archives — without needing to code.**
 
+> This repository was originally developed in Brazilian Portuguese and is currently undergoing translation into English. At this stage, only the documentation has been translated; the notebook interfaces and widgets are still in Portuguese. Future updates will provide full English support.
+
 MOODIE was created as a **pedagogical laboratory** that introduces Design students and professionals to computational vision methods, visual data mining, and trend mapping practices.  
 The complete workflow is organized into **two independent yet complementary notebooks**:
 
@@ -86,7 +88,7 @@ Modifications or redistribution require permission. See the [`LICENSE.txt`](LICE
 
 ## How to cite MOODIE (APA format):
 
-Bitencourt, E. (2025). *MOODIE Image Trends: Modular Observational & Operational Design Image Explorer Light* (Beta version) [GitHub repository]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie
+Bitencourt, E. (2025). *MOODIE Image Trends: Modular Observational & Operational Design Image Explorer Light* (Beta version) [GitHub repository]. Datalab/Design – Universidade do Estado da Bahia. https://github.com/datalabdesign/moodie_english
 
 <p align="left">
   <sub>Website: <a href="https://datalab.org">datalab.org</a> · Instagram: <a href="https://www.instagram.com/datalabdesign">@datalabdesign</a></sub>
